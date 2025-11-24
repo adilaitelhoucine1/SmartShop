@@ -1,1 +1,1 @@
-# SmartShop
+# SmartShop Project
