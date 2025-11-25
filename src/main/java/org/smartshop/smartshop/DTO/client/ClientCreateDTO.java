@@ -1,5 +1,7 @@
 package org.smartshop.smartshop.DTO.client;
 
+import jakarta.persistence.Column;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -12,4 +14,7 @@ public class ClientCreateDTO {
     @NotBlank(message = "L'email est obligatoire")
     @Email(message = "Format d'email invalide")
     private String email;
+
+    @NotEmpty
+    private String password;
 }
