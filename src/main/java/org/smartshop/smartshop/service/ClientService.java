@@ -1,8 +1,10 @@
 package org.smartshop.smartshop.service;
 
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.smartshop.smartshop.DTO.client.ClientCreateDTO;
+import org.smartshop.smartshop.DTO.client.ClientProfileDTO;
 import org.smartshop.smartshop.DTO.client.ClientReadDTO;
 import org.smartshop.smartshop.DTO.client.ClientUpdateDTO;
 
@@ -17,4 +19,6 @@ public interface ClientService {
     ClientReadDTO updateClient(@Valid ClientUpdateDTO clientUpdateDTO, Long id);
 
     void deleteClient(Long id);
+
+    ClientProfileDTO getProfile(HttpSession session);
 }

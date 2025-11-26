@@ -39,5 +39,12 @@ public class GlobalExceptionHandler {
         ErrorResponseDTO errorResponseDTO= new ErrorResponseDTO(409,"Not Found",ex.getMessage(),request.getDescription(false));
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponseDTO);
     }
+    @ExceptionHandler(SessionEmtyException.class)
+    public ResponseEntity<ErrorResponseDTO> handleSessionEmtyException(SessionEmtyException ex
+    , WebRequest request){
+
+        ErrorResponseDTO errorResponseDTO= new ErrorResponseDTO(401,"No User Connect",ex.getMessage(),request.getDescription(false));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponseDTO);
+    }
 
 }

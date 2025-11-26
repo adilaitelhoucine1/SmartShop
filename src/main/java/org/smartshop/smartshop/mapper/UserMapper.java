@@ -3,6 +3,7 @@ package org.smartshop.smartshop.mapper;
 import org.mapstruct.*;
 import org.smartshop.smartshop.DTO.auth.LoginRequestDTO;
 import org.smartshop.smartshop.DTO.auth.LoginResponseDTO;
+import org.smartshop.smartshop.entity.Client;
 import org.smartshop.smartshop.entity.User;
 
 @Mapper(componentModel = "spring")
@@ -15,4 +16,5 @@ public interface UserMapper {
     @Mapping(source = "id", target = "userId")
     @Mapping(target = "message", ignore = true)
     LoginResponseDTO toLoginResponseDTO(User entity);
+    Client toClientEntity(LoginResponseDTO dto);
 }

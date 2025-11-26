@@ -1,8 +1,10 @@
 package org.smartshop.smartshop.controller;
 
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.smartshop.smartshop.DTO.client.ClientCreateDTO;
+import org.smartshop.smartshop.DTO.client.ClientProfileDTO;
 import org.smartshop.smartshop.DTO.client.ClientReadDTO;
 import org.smartshop.smartshop.DTO.client.ClientUpdateDTO;
 import org.smartshop.smartshop.service.ClientService;
@@ -45,6 +47,12 @@ public class ClientController {
 
         clientService.deleteClient(id);
         return ResponseEntity.ok(Map.of("Message","Client with id :  " +id +" is deleted seccufuly"));
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<ClientProfileDTO> getProfile(HttpSession session){
+        ClientProfileDTO clientProfile= clientService.getProfile(session);
+        return ResponseEntity.ok(clientProfile);
     }
 
 }
