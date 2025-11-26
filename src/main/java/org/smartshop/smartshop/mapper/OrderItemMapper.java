@@ -1,36 +1,21 @@
 package org.smartshop.smartshop.mapper;
 
+import org.mapstruct.*;
 import org.smartshop.smartshop.DTO.order.OrderCreateDTO;
 import org.smartshop.smartshop.DTO.order.OrderReadDTO;
 import org.smartshop.smartshop.entity.OrderItem;
-import org.springframework.stereotype.Component;
 
-@Component
-public class OrderItemMapper {
+@Mapper(componentModel = "spring", uses = {ProductMapper.class})
+public interface OrderItemMapper {
 
-    private final ProductMapper productMapper;
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "unitPriceAtTime", ignore = true)
+    @Mapping(target = "lineTotal", ignore = true)
+    @Mapping(target = "order", ignore = true)
+    @Mapping(target = "product", ignore = true)
+    OrderItem toEntity(OrderCreateDTO.OrderItemCreateDTO dto);
 
-    public OrderItemMapper(ProductMapper productMapper) {
-        this.productMapper = productMapper;
-    }
-
-    public OrderItem toEntity(OrderCreateDTO.OrderItemCreateDTO dto) {
-        return OrderItem.builder()
-                .quantity(dto.getQuantity())
-                .build();
-    }
-
-    public OrderReadDTO.OrderItemReadDTO toReadDTO(OrderItem entity) {
-        OrderReadDTO.OrderItemReadDTO dto = new OrderReadDTO.OrderItemReadDTO();
-        dto.setId(entity.getId());
-        dto.setQuantity(entity.getQuantity());
-        dto.setUnitPrice(entity.getUnitPriceAtTime());
-        dto.setTotalPrice(entity.getLineTotal());
-        
-        if (entity.getProduct() != null) {
-            dto.setProduct(productMapper.toReadDTO(entity.getProduct()));
-        }
-        
-        return dto;
-    }
+    @Mapping(source = "unitPriceAtTime", target = "unitPrice")
+    @Mapping(source = "lineTotal", target = "totalPrice")
+    OrderReadDTO.OrderItemReadDTO toReadDTO(OrderItem entity);
 }

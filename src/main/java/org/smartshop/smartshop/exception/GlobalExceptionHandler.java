@@ -25,4 +25,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<ErrorResponseDTO> handleDuplicateResource(DuplicateResourceException ex
+    , WebRequest request){
+
+        ErrorResponseDTO errorResponseDTO= new ErrorResponseDTO(409,"Duplicate",ex.getMessage(),request.getDescription(false));
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponseDTO);
+    }
+
 }

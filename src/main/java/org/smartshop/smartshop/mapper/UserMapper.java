@@ -1,26 +1,19 @@
 package org.smartshop.smartshop.mapper;
 
+import org.mapstruct.*;
 import org.smartshop.smartshop.DTO.auth.LoginRequestDTO;
 import org.smartshop.smartshop.DTO.auth.LoginResponseDTO;
 import org.smartshop.smartshop.entity.User;
-import org.springframework.stereotype.Component;
 
-@Component
-public class UserMapper {
+@Mapper(componentModel = "spring")
+public interface UserMapper {
 
-    public User toEntity(LoginRequestDTO dto) {
-        return User.builder()
-                .username(dto.getUsername())
-                .password(dto.getPassword())
-                .build();
-    }
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "role", ignore = true)
+    @Mapping(target = "client", ignore = true)
+    User toEntity(LoginRequestDTO dto);
 
-    public LoginResponseDTO toLoginResponseDTO(User entity, String message) {
-        return new LoginResponseDTO(
-                entity.getId(),
-                entity.getUsername(),
-                entity.getRole(),
-                message
-        );
-    }
+    @Mapping(source = "id", target = "userId")
+    @Mapping(target = "message", ignore = true)
+    LoginResponseDTO toLoginResponseDTO(User entity);
 }

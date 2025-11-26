@@ -1,15 +1,13 @@
 package org.smartshop.smartshop.mapper;
 
+import org.mapstruct.*;
 import org.smartshop.smartshop.entity.PromoCode;
-import org.springframework.stereotype.Component;
 
-@Component
-public class PromoCodeMapper {
+@Mapper(componentModel = "spring")
+public interface PromoCodeMapper {
 
-    public PromoCode toEntity(String code, java.math.BigDecimal discountPercentage) {
-        return PromoCode.builder()
-                .code(code)
-                .discountPercentage(discountPercentage)
-                .build();
-    }
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "isActive", ignore = true)
+    @Mapping(target = "orders", ignore = true)
+    PromoCode toEntity(String code, java.math.BigDecimal discountPercentage);
 }
