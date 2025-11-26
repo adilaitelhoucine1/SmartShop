@@ -9,5 +9,5 @@ public class ProductReadDTO {
     private String name;
     private BigDecimal unitPrice;
     private Integer availableStock;
-//    private Boolean isDeleted;
+   private Boolean isDeleted = false;
 }

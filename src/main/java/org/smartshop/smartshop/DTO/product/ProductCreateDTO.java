@@ -19,4 +19,6 @@ public class ProductCreateDTO {
     @NotNull(message = "Le stock disponible est obligatoire")
     @Min(value = 0, message = "Le stock ne peut pas être négatif")
     private Integer availableStock;
+
+    private Boolean isDeleted = false;
 }

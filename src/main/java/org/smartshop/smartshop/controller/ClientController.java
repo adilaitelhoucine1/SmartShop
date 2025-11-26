@@ -3,6 +3,7 @@ package org.smartshop.smartshop.controller;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.hibernate.query.Page;
 import org.smartshop.smartshop.DTO.client.ClientCreateDTO;
 import org.smartshop.smartshop.DTO.client.ClientProfileDTO;
 import org.smartshop.smartshop.DTO.client.ClientReadDTO;
@@ -59,5 +60,7 @@ public class ClientController {
         ClientProfileDTO clientProfile= clientService.getProfile(session);
         return ResponseEntity.ok(clientProfile);
     }
+
+
 
 }

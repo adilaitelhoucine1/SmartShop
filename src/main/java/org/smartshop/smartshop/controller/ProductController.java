@@ -1,6 +1,8 @@
 package org.smartshop.smartshop.controller;
 
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.smartshop.smartshop.DTO.product.ProductUpdateDTO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
@@ -21,10 +23,13 @@ public class ProductController {
     public ProductController(ProductService productService){this.productService=productService;}
 
     @GetMapping
-    public ResponseEntity<List<ProductReadDTO>> getallProducts(){
-        List<ProductReadDTO> listProducts=productService.getallProducts();
-        return ResponseEntity.ok(listProducts);
+    public ResponseEntity<Page<ProductReadDTO>> getAllProducts(
+            @RequestParam(defaultValue = "false") boolean includeDeleted,
+            Pageable pageable){
+        Page<ProductReadDTO> products = productService.getAllProducts(includeDeleted, pageable);
+        return ResponseEntity.ok(products);
     }
+
     @GetMapping("/{id}")
      public  ResponseEntity<ProductReadDTO> getProductById(@PathVariable("id") Long id){
         ProductReadDTO product=productService.getProductById(id);
@@ -37,16 +42,20 @@ public class ProductController {
         ProductReadDTO product =productService.createProduct(productCreateDTO);
         return ResponseEntity.ok(product);
     }
+
     @PutMapping("/{id}")
     public ResponseEntity<ProductReadDTO> updateProduct(@Valid @RequestBody ProductUpdateDTO productUpdateDTO,
                                                         @PathVariable("id") Long id){
         ProductReadDTO  productUpdated=productService.updateProduct(id,productUpdateDTO);
         return ResponseEntity.ok(productUpdated);
     }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, String>> deleteProduct(@PathVariable("id") Long id){
         productService.deleteProduct(id);
         return ResponseEntity.ok(Map.of("message","Item deleted succesffuly"));
     }
+
+
 
 }
