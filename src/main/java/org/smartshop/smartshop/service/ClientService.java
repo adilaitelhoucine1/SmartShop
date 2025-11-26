@@ -15,4 +15,6 @@ public interface ClientService {
     ClientReadDTO createClient(@Valid ClientCreateDTO clientCreateDTO);
 
     ClientReadDTO updateClient(@Valid ClientUpdateDTO clientUpdateDTO, Long id);
+
+    void deleteClient(Long id);
 }

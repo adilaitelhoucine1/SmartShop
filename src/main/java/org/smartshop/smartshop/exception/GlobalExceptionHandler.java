@@ -32,5 +32,12 @@ public class GlobalExceptionHandler {
         ErrorResponseDTO errorResponseDTO= new ErrorResponseDTO(409,"Duplicate",ex.getMessage(),request.getDescription(false));
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponseDTO);
     }
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleResourceNotFoundException(ResourceNotFoundException ex
+    , WebRequest request){
+
+        ErrorResponseDTO errorResponseDTO= new ErrorResponseDTO(409,"Not Found",ex.getMessage(),request.getDescription(false));
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponseDTO);
+    }
 
 }
