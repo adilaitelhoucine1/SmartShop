@@ -29,6 +29,11 @@ public class ClientController {
         List<ClientReadDTO> clients= clientService.getAllClients();
         return ResponseEntity.ok(clients);
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<ClientReadDTO> getClientById(@PathVariable("id") Long id){
+        ClientReadDTO client=clientService.getClientById(id);
+        return ResponseEntity.ok(client);
+    }
 
     @PostMapping
     public ResponseEntity<ClientReadDTO> createCLient(@Valid @RequestBody ClientCreateDTO clientCreateDTO){

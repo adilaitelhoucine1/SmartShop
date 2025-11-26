@@ -21,4 +21,6 @@ public interface ClientService {
     void deleteClient(Long id);
 
     ClientProfileDTO getProfile(HttpSession session);
+
+    ClientReadDTO getClientById(Long id);
 }

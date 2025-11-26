@@ -14,9 +14,11 @@ import org.smartshop.smartshop.enums.UserRole;
 import org.smartshop.smartshop.exception.DuplicateResourceException;
 import org.smartshop.smartshop.exception.ResourceNotFoundException;
 import org.smartshop.smartshop.exception.SessionEmtyException;
+import org.smartshop.smartshop.exception.UnauthorizedException;
 import org.smartshop.smartshop.mapper.ClientMapper;
 import org.smartshop.smartshop.mapper.UserMapper;
 import org.smartshop.smartshop.repository.ClientRepository;
+import org.smartshop.smartshop.repository.OrderRepository;
 import org.smartshop.smartshop.repository.UserRepository;
 import org.smartshop.smartshop.service.ClientService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -34,13 +36,17 @@ public class ClientServiceImpl implements ClientService {
     private final ClientMapper clientMapper;
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder= new BCryptPasswordEncoder();
-    private final UserMapper userMapper;
-    ;
+    private final OrderRepository orderRepository;
 
     public List<ClientReadDTO> getAllClients(){
         return clientRepository.findAll().stream()
                 .map(clientMapper::toReadDTO)
                 .toList();
+    }
+
+    public   ClientReadDTO getClientById(Long id){
+        return getAllClients().stream().filter(client->client.getId().equals(id)).
+                findFirst().orElseThrow(()->new ResourceNotFoundException("client with this id  doesn t existe"));
     }
     public ClientReadDTO createClient(@Valid ClientCreateDTO clientCreateDTO){
 
@@ -76,6 +82,10 @@ public class ClientServiceImpl implements ClientService {
     public  void deleteClient(Long id){
         Client client= clientRepository.findById(id).orElseThrow(
                 ()->new ResourceNotFoundException("Client doesn't exist with this id"));
+
+        if (!orderRepository.findAllByClient(client).isEmpty()){
+            throw new UnauthorizedException("You can t delete thi client (he has comands)");
+        }
         clientRepository.delete(client);
     }
     public ClientProfileDTO getProfile(HttpSession session){
