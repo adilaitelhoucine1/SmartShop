@@ -15,9 +15,9 @@ public class OrderItem {
     private Long id;
     @Column(nullable = false)
     private Integer quantity;
-    @Column(nullable = false, precision = 10, scale = 2)
+    @Column(nullable = false)
     private BigDecimal unitPriceAtTime;
-    @Column(nullable = false, precision = 10, scale = 2)
+    @Column(nullable = false)
     private BigDecimal lineTotal;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)

@@ -28,4 +28,17 @@ public class PromoCodeController {
         PromoCodeReadDTO promocode=promoCodeService.createPromoCode(promoCodeCreateDTO);
         return ResponseEntity.ok(promocode);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<PromoCodeReadDTO> getPromCodeById(@PathVariable("id") Long id){
+        PromoCodeReadDTO promocode=promoCodeService.getPromoById(id);
+        return ResponseEntity.ok(promocode);
+    }
+
+    @GetMapping("/{id}/desactiver")
+    public ResponseEntity<PromoCodeReadDTO> desactiverPromo(@PathVariable("id") Long id){
+
+        PromoCodeReadDTO promo=promoCodeService.desactiverPromo(id);
+        return ResponseEntity.ok(promo);
+    }
 }

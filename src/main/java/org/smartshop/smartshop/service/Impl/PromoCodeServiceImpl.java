@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.smartshop.smartshop.DTO.promocode.PromoCodeCreateDTO;
 import org.smartshop.smartshop.DTO.promocode.PromoCodeReadDTO;
 import org.smartshop.smartshop.entity.PromoCode;
+import org.smartshop.smartshop.exception.AlreadyDisabled;
+import org.smartshop.smartshop.exception.ResourceNotFoundException;
 import org.smartshop.smartshop.mapper.PromoCodeMapper;
 import org.smartshop.smartshop.repository.PromoCodeRepository;
 import org.smartshop.smartshop.service.PromoCodeService;
@@ -32,5 +34,21 @@ public class PromoCodeServiceImpl implements PromoCodeService {
                 .build();
         promoCodeRepository.save(promoCode);
         return promoCodeMapper.toReadDTO(promoCode);
+    }
+    public  PromoCodeReadDTO getPromoById(Long id){
+        PromoCodeReadDTO code=getAllPromoCodes().stream().filter(p->p.getId().equals(id))
+                .findFirst().orElseThrow(()-> new ResourceNotFoundException("this promo doesn t exiite"));
+        return code;
+    }
+    public  PromoCodeReadDTO desactiverPromo(Long id){
+        PromoCodeReadDTO code=getAllPromoCodes().stream().filter(p->p.getId().equals(id))
+                .findFirst().orElseThrow(()-> new ResourceNotFoundException("this promo doesn t exiite"));
+
+        if (!code.getIsActive()){
+            throw new AlreadyDisabled("Already Disabled");
+        }
+        code.setIsActive(false);
+        promoCodeRepository.save(promoCodeMapper.toEntity(code));
+        return code;
     }
 }

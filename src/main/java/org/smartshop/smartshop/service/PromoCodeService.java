@@ -10,4 +10,8 @@ public interface PromoCodeService {
     List<PromoCodeReadDTO> getAllPromoCodes();
 
     PromoCodeReadDTO createPromoCode(@Valid PromoCodeCreateDTO promoCodeCreateDTO);
+
+    PromoCodeReadDTO getPromoById(Long id);
+
+    PromoCodeReadDTO desactiverPromo(Long id);
 }

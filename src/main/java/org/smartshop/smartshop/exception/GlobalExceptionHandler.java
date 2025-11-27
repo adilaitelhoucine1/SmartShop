@@ -43,6 +43,22 @@ public class GlobalExceptionHandler {
         ErrorResponseDTO errorResponseDTO= new ErrorResponseDTO(401,"No User Connect",ex.getMessage(),request.getDescription(false));
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponseDTO);
     }
+    @ExceptionHandler(AlreadyDisabled.class)
+    public ResponseEntity<ErrorResponseDTO> handleAlreadyDisabled(AlreadyDisabled ex
+    , WebRequest request){
+
+        ErrorResponseDTO errorResponseDTO= new ErrorResponseDTO(400,"Already Disabled",ex.getMessage(),request.getDescription(false));
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponseDTO);
+    }
+    @ExceptionHandler(StockNotValid.class)
+    public ResponseEntity<ErrorResponseDTO> handleStockNotValid(StockNotValid ex
+    , WebRequest request){
+
+            ErrorResponseDTO errorResponseDTO= new ErrorResponseDTO(422,"insufficient stock",ex.getMessage(),request.getDescription(false));
+        return ResponseEntity.ok(errorResponseDTO);
+    }
+
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponseDTO> handleMethodArgumentNotValidException(
             MethodArgumentNotValidException ex, WebRequest request) {

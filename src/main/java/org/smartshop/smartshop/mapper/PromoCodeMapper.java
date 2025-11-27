@@ -13,6 +13,7 @@ public interface PromoCodeMapper {
     @Mapping(target = "isActive", ignore = true)
     @Mapping(target = "orders", ignore = true)
     PromoCode toEntity(PromoCodeCreateDTO dto);
+    PromoCode toEntity(PromoCodeReadDTO dto);
 
     PromoCodeReadDTO toReadDTO(PromoCode entity);
 
