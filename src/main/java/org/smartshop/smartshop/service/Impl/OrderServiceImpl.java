@@ -1,5 +1,6 @@
 package org.smartshop.smartshop.service.Impl;
 
+import org.smartshop.smartshop.utils.ConfigService;
 import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,10 @@ public class OrderServiceImpl implements OrderService {
         private  final OrderItemMapper orderItemMapper;;
         private final ProductRepository productRepository;
         private final OrderItemRepository orderItemRepository;
+        private final ConfigRepository configRepository;
+        ConfigService configService= new ConfigService(configRepository);
+
+
 
     @Transactional(readOnly = true)
     public List<OrderReadDTO> getAllOrders(){
@@ -71,14 +76,14 @@ public class OrderServiceImpl implements OrderService {
 
        BigDecimal PromoDiscount=promoCode.getDiscountPercentage();
 
-      BigDecimal totalDiscountPercentage=tierDiscount.add(PromoDiscount);
+       BigDecimal totalDiscountPercentage=tierDiscount.add(PromoDiscount);
 
 
       BigDecimal discountAmount = subTotalHT.multiply(totalDiscountPercentage)
                    .divide(BigDecimal.valueOf(100), 2);
        BigDecimal amountHTAfterDiscount = subTotalHT.subtract(discountAmount);
 
-       BigDecimal tva = amountHTAfterDiscount.multiply(new BigDecimal("0.20"));
+       BigDecimal tva = amountHTAfterDiscount.multiply(configService.getTva());
 
        BigDecimal grandTotalTTC = amountHTAfterDiscount.add(tva);
 
@@ -120,7 +125,7 @@ public class OrderServiceImpl implements OrderService {
 
        }
         order.setOrderItems(listOrderItem);
-       orderRepository.save(order);
+        orderRepository.save(order);
         return orderMapper.toReadDTO(order);
 
    }
