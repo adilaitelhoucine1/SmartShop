@@ -1,5 +1,6 @@
 package org.smartshop.smartshop.service.Impl;
 
+import org.smartshop.smartshop.exception.InvalidPromoException;
 import org.smartshop.smartshop.utils.ConfigService;
 import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.Valid;
@@ -32,7 +33,7 @@ public class OrderServiceImpl implements OrderService {
         private final ProductRepository productRepository;
         private final OrderItemRepository orderItemRepository;
         private final ConfigRepository configRepository;
-        ConfigService configService= new ConfigService(configRepository);
+        private final ConfigService config;
 
 
 
@@ -48,6 +49,9 @@ public class OrderServiceImpl implements OrderService {
                ()->new ResourceNotFoundException("Promo doesn t existe")
        );
 
+       if(!promoCode.getIsActive()){
+           throw new InvalidPromoException("Promo Code is Already Used");
+       }
 
        List<OrderItem> listOrderItem= new ArrayList<>();
 
@@ -83,7 +87,7 @@ public class OrderServiceImpl implements OrderService {
                    .divide(BigDecimal.valueOf(100), 2);
        BigDecimal amountHTAfterDiscount = subTotalHT.subtract(discountAmount);
 
-       BigDecimal tva = amountHTAfterDiscount.multiply(configService.getTva());
+       BigDecimal tva = amountHTAfterDiscount.multiply(config.getTva());
 
        BigDecimal grandTotalTTC = amountHTAfterDiscount.add(tva);
 
@@ -100,14 +104,12 @@ public class OrderServiceImpl implements OrderService {
        orderRepository.save(order);
 
 
-
-
        for (OrderCreateDTO.OrderItemCreateDTO item : orderCreateDTO.getOrderItems()) {
            Product product = productRepository.findById(item.getProduct().getId()).orElseThrow(()->
                    new ResourceNotFoundException("product doesn t existe")
            );
-           product.setAvailableStock(product.getAvailableStock() - item.getQuantity());
-           productRepository.save(product);
+//           product.setAvailableStock(product.getAvailableStock() - item.getQuantity());
+//           productRepository.save(product);
 
            BigDecimal lineTotal = item.getUnitPriceAtTime()
                    .multiply(BigDecimal.valueOf(item.getQuantity()));
@@ -130,7 +132,7 @@ public class OrderServiceImpl implements OrderService {
 
    }
 
-
+    @Transactional(readOnly = true)
     public  OrderReadDTO cancelOrder(Long id){
         Order order=orderRepository.findById(id).orElseThrow(()->
                 new ResourceNotFoundException("Product doesn t existe")
@@ -139,6 +141,7 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
         return orderMapper.toReadDTO(order);
     }
+    @Transactional(readOnly = true)
     public  OrderReadDTO rejectOrder(Long id){
         Order order=orderRepository.findById(id).orElseThrow(()->
                 new ResourceNotFoundException("Product doesn t existe")
@@ -146,6 +149,15 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(OrderStatus.REJECTED);
         orderRepository.save(order);
         return orderMapper.toReadDTO(order);
+    }
+    @Transactional(readOnly = true)
+    public  List<OrderReadDTO> getOrderHistoryByClient(Long clientId){
+        Client client= clientRepository.findById(clientId).orElseThrow(
+                ()->new ResourceNotFoundException("Client with Id Doesn t existe")
+        );
+        return getAllOrders().stream().filter(order->order.getClient().getId().equals(clientId) &&
+                    order.getStatus()==OrderStatus.CONFIRMED
+                ).toList();
     }
 
 }

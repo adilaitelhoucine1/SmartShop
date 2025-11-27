@@ -1,6 +1,7 @@
 package org.smartshop.smartshop.controller;
 
 
+import jakarta.persistence.Entity;
 import jakarta.validation.Valid;
 import lombok.extern.java.Log;
 import org.smartshop.smartshop.DTO.order.OrderCreateDTO;
@@ -38,5 +39,11 @@ public class OrderController {
         OrderReadDTO order=orderService.rejectOrder(id);
         return ResponseEntity.ok(order);
     }
+    @GetMapping("/{clientId}/orderHistory")
+    public ResponseEntity<List<OrderReadDTO>> getOrderHistoryByClient(@PathVariable("clientId") Long clientId){
+        List<OrderReadDTO> orderHistory=orderService.getOrderHistoryByClient(clientId);
+        return ResponseEntity.ok(orderHistory);
+    }
+
 
 }

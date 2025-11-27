@@ -57,6 +57,13 @@ public class GlobalExceptionHandler {
             ErrorResponseDTO errorResponseDTO= new ErrorResponseDTO(422,"insufficient stock",ex.getMessage(),request.getDescription(false));
         return ResponseEntity.ok(errorResponseDTO);
     }
+    @ExceptionHandler(InvalidPromoException.class)
+    public ResponseEntity<ErrorResponseDTO> handleInvalidPromoException(InvalidPromoException ex
+    , WebRequest request){
+
+            ErrorResponseDTO errorResponseDTO= new ErrorResponseDTO(422,"Promo Code is Already Used",ex.getMessage(),request.getDescription(false));
+        return ResponseEntity.ok(errorResponseDTO);
+    }
 
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

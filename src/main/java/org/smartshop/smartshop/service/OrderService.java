@@ -14,4 +14,6 @@ public interface OrderService {
     OrderReadDTO cancelOrder(Long id);
 
     OrderReadDTO rejectOrder(Long id);
+
+    List<OrderReadDTO> getOrderHistoryByClient(Long clientId);
 }
