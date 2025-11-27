@@ -43,6 +43,7 @@ public class GlobalExceptionHandler {
         ErrorResponseDTO errorResponseDTO= new ErrorResponseDTO(401,"No User Connect",ex.getMessage(),request.getDescription(false));
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponseDTO);
     }
+
     @ExceptionHandler(AlreadyDisabled.class)
     public ResponseEntity<ErrorResponseDTO> handleAlreadyDisabled(AlreadyDisabled ex
     , WebRequest request){
@@ -65,7 +66,20 @@ public class GlobalExceptionHandler {
         return ResponseEntity.ok(errorResponseDTO);
     }
 
+    @ExceptionHandler(OrderAlreadyPayed.class)
+    public ResponseEntity<ErrorResponseDTO> handleOrderAlreadyPayed(OrderAlreadyPayed ex
+            , WebRequest request){
 
+        ErrorResponseDTO errorResponseDTO= new ErrorResponseDTO(422,"Order Already Payed",ex.getMessage(),request.getDescription(false));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponseDTO);
+    }
+    @ExceptionHandler(LimiteEspeceException.class)
+    public ResponseEntity<ErrorResponseDTO> handleLimiteEspeceException(LimiteEspeceException ex
+            , WebRequest request){
+
+        ErrorResponseDTO errorResponseDTO= new ErrorResponseDTO(422,"Payment reached Limit (20000 Dh)",ex.getMessage(),request.getDescription(false));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponseDTO);
+    }
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponseDTO> handleMethodArgumentNotValidException(
             MethodArgumentNotValidException ex, WebRequest request) {
