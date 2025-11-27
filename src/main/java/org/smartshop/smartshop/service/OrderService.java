@@ -10,4 +10,8 @@ public interface OrderService {
     List<OrderReadDTO> getAllOrders();
 
     OrderReadDTO createCommande(@Valid OrderCreateDTO orderCreateDTO);
+
+    OrderReadDTO cancelOrder(Long id);
+
+    OrderReadDTO rejectOrder(Long id);
 }

@@ -2,6 +2,7 @@ package org.smartshop.smartshop.controller;
 
 
 import jakarta.validation.Valid;
+import lombok.extern.java.Log;
 import org.smartshop.smartshop.DTO.order.OrderCreateDTO;
 import org.smartshop.smartshop.DTO.order.OrderReadDTO;
 import org.smartshop.smartshop.service.OrderService;
@@ -23,8 +24,18 @@ public class OrderController {
         return ResponseEntity.ok(orderList);
     }
     @PostMapping
-    public ResponseEntity<OrderReadDTO> createCommande(@Valid @RequestBody OrderCreateDTO orderCreateDTO){
+    public ResponseEntity<OrderReadDTO> createOrder(@Valid @RequestBody OrderCreateDTO orderCreateDTO){
         OrderReadDTO order=orderService.createCommande(orderCreateDTO);
+        return ResponseEntity.ok(order);
+    }
+    @GetMapping("{id}/cancel")
+    public ResponseEntity<OrderReadDTO> cancelOrder(@PathVariable("id") Long id){
+       OrderReadDTO order=orderService.cancelOrder(id);
+       return ResponseEntity.ok(order);
+   }
+    @GetMapping("{id}/reject")
+    public ResponseEntity<OrderReadDTO> rejectOrder(@PathVariable("id") Long id){
+        OrderReadDTO order=orderService.rejectOrder(id);
         return ResponseEntity.ok(order);
     }
 }

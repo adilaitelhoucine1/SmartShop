@@ -124,4 +124,23 @@ public class OrderServiceImpl implements OrderService {
         return orderMapper.toReadDTO(order);
 
    }
+
+
+    public  OrderReadDTO cancelOrder(Long id){
+        Order order=orderRepository.findById(id).orElseThrow(()->
+                new ResourceNotFoundException("Product doesn t existe")
+                );
+        order.setStatus(OrderStatus.CANCELED);
+        orderRepository.save(order);
+        return orderMapper.toReadDTO(order);
+    }
+    public  OrderReadDTO rejectOrder(Long id){
+        Order order=orderRepository.findById(id).orElseThrow(()->
+                new ResourceNotFoundException("Product doesn t existe")
+                );
+        order.setStatus(OrderStatus.REJECTED);
+        orderRepository.save(order);
+        return orderMapper.toReadDTO(order);
+    }
+
 }
