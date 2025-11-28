@@ -4,7 +4,7 @@ import org.smartshop.smartshop.exception.InvalidPromoException;
 import org.smartshop.smartshop.exception.OrderUnPaidException;
 import org.smartshop.smartshop.service.ClientService;
 import org.smartshop.smartshop.utils.ConfigService;
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
