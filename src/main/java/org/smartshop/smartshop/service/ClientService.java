@@ -7,6 +7,7 @@ import org.smartshop.smartshop.DTO.client.ClientCreateDTO;
 import org.smartshop.smartshop.DTO.client.ClientProfileDTO;
 import org.smartshop.smartshop.DTO.client.ClientReadDTO;
 import org.smartshop.smartshop.DTO.client.ClientUpdateDTO;
+import org.smartshop.smartshop.entity.Client;
 
 import java.util.List;
 
@@ -23,4 +24,5 @@ public interface ClientService {
     ClientProfileDTO getProfile(HttpSession session);
 
     ClientReadDTO getClientById(Long id);
+    void updateClientTier(Client client);
 }

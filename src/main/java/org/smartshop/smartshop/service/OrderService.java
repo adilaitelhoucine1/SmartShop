@@ -16,4 +16,5 @@ public interface OrderService {
     OrderReadDTO rejectOrder(Long id);
 
     List<OrderReadDTO> getOrderHistoryByClient(Long clientId);
+    OrderReadDTO validateOrder(Long orderId);
 }

@@ -80,6 +80,20 @@ public class GlobalExceptionHandler {
         ErrorResponseDTO errorResponseDTO= new ErrorResponseDTO(422,"Payment reached Limit (20000 Dh)",ex.getMessage(),request.getDescription(false));
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponseDTO);
     }
+    @ExceptionHandler(OrderUnPaidException.class)
+    public ResponseEntity<ErrorResponseDTO> handleOrderUnPaid(OrderUnPaidException ex
+            , WebRequest request){
+
+        ErrorResponseDTO errorResponseDTO= new ErrorResponseDTO(422,"Order not Paid Yet",ex.getMessage(),request.getDescription(false));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponseDTO);
+    }
+    @ExceptionHandler(BusinessLogicException.class)
+    public ResponseEntity<ErrorResponseDTO> handleBusinessLogicException(BusinessLogicException ex
+            , WebRequest request){
+
+        ErrorResponseDTO errorResponseDTO= new ErrorResponseDTO(422,"Business logic Error",ex.getMessage(),request.getDescription(false));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponseDTO);
+    }
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponseDTO> handleMethodArgumentNotValidException(
             MethodArgumentNotValidException ex, WebRequest request) {

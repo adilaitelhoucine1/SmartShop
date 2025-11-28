@@ -10,6 +10,7 @@ import org.smartshop.smartshop.DTO.client.ClientUpdateDTO;
 import org.smartshop.smartshop.DTO.client.ClientProfileDTO;
 import org.smartshop.smartshop.entity.Client;
 import org.smartshop.smartshop.entity.User;
+import org.smartshop.smartshop.enums.CustomerTier;
 import org.smartshop.smartshop.enums.UserRole;
 import org.smartshop.smartshop.exception.DuplicateResourceException;
 import org.smartshop.smartshop.exception.ResourceNotFoundException;
@@ -25,6 +26,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
@@ -98,5 +100,39 @@ public class ClientServiceImpl implements ClientService {
                 .orElseThrow(() -> new ResourceNotFoundException("Client profile not found"));
         
         return clientMapper.toProfileDTO(client);
+    }
+
+    public void updateClientTier(Client client){
+        Client cliennt=clientRepository.findById(client.getId()).orElseThrow(
+                ()->new ResourceNotFoundException("Client Not Found")
+        );
+
+        switch (cliennt.getLoyaltyTier().name()) {
+
+            case "BASIC" -> {
+                if (cliennt.getTotalOrders() >= 3
+                        || cliennt.getTotalSpent().compareTo(new BigDecimal("1000")) >= 0) {
+
+                    cliennt.setLoyaltyTier(CustomerTier.SILVER);
+                }
+            }
+            case "SILVER" -> {
+                if (cliennt.getTotalOrders() >= 10
+                        || cliennt.getTotalSpent().compareTo(new BigDecimal("5000")) >= 0) {
+
+                    cliennt.setLoyaltyTier(CustomerTier.GOLD);
+                }
+            }
+            case "GOLD" -> {
+                if (cliennt.getTotalOrders() >= 20
+                        || cliennt.getTotalSpent().compareTo(new BigDecimal("15000")) >= 0) {
+
+                    cliennt.setLoyaltyTier(CustomerTier.PLATINUM);
+                }
+            }
+
+        }
+        clientRepository.save(client);
+
     }
 }

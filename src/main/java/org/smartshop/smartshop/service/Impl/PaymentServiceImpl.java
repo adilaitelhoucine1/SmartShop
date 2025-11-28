@@ -9,6 +9,7 @@ import org.smartshop.smartshop.entity.Order;
 import org.smartshop.smartshop.entity.Payment;
 import org.smartshop.smartshop.enums.PaymentStatus;
 import org.smartshop.smartshop.enums.PaymentType;
+import org.smartshop.smartshop.exception.BusinessLogicException;
 import org.smartshop.smartshop.exception.LimiteEspeceException;
 import org.smartshop.smartshop.exception.OrderAlreadyPayed;
 import org.smartshop.smartshop.exception.ResourceNotFoundException;
@@ -21,6 +22,7 @@ import org.smartshop.smartshop.service.PaymentService;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -29,17 +31,23 @@ public class PaymentServiceImpl implements PaymentService {
     private final OrderRepository orderRepository;
     private ClientRepository clientRepository;
     private final PaymentMapper paymentMapper;
+
+    public List<PaymentReadDTO> getOrderPaymentsWithStatusPending(Order order) {
+        List<Payment> payments = paymentRepository.getAllByOrderAndStatus(order,PaymentStatus.EN_ATTENTE);
+        return payments.stream().map(paymentMapper::toReadDTO).toList();
+    }
+
    public PaymentReadDTO createPayment(@Valid PaymentCreateDTO paymentDTO){
        Order order= orderRepository.findById(paymentDTO.getOrderId()).orElseThrow(
                ()-> new ResourceNotFoundException("Order Not Found")
        );
        if (order.getRemainingAmount().equals(BigDecimal.ZERO)){
-           throw  new OrderAlreadyPayed("Order Already Payed");
+           throw  new BusinessLogicException("Order Already Payed");
        }
 
        if (paymentDTO.getPaymentType()==PaymentType.ESPECES
                && paymentDTO.getAmount().compareTo(new BigDecimal("20000"))>0){
-           throw new LimiteEspeceException("Reached Limit 20 000 Dh");
+           throw new BusinessLogicException("Reached Limit 20 000 Dh");
 
        }
        Payment payment=Payment.builder()
@@ -49,10 +57,12 @@ public class PaymentServiceImpl implements PaymentService {
                .reference(paymentDTO.getReference())
                .order(order)
                .build();
+       paymentRepository.save(payment);
 
        if (paymentDTO.getPaymentType()==PaymentType.ESPECES){
           // payment.setBankName(paymentDTO.getBankName());
            payment.setStatus(PaymentStatus.ENCAISSE);
+           validatePayment(payment.getId());
        }
        if (paymentDTO.getPaymentType()==PaymentType.VIREMENT){
            payment.setBankName(paymentDTO.getBankName());
@@ -67,9 +77,6 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
 
-
-
-
     public PaymentReadDTO validatePayment(Long paymentId){
 
         Payment paiment= paymentRepository.findById(paymentId).orElseThrow(
@@ -80,14 +87,21 @@ public class PaymentServiceImpl implements PaymentService {
                 ()-> new ResourceNotFoundException("Order Not Found")
         );
 
+        if (getOrderPaymentsWithStatusPending(ordre).isEmpty()){
+            throw new BusinessLogicException("No Payment to validate All Are validated");
+        }
+
+        if (ordre.getRemainingAmount().compareTo(paiment.getAmount())<0){
+                throw new BusinessLogicException("the Amount is more than  the paiment Amount");
+        }
+
         ordre.setRemainingAmount(ordre.getRemainingAmount().subtract(paiment.getAmount()));
+
         paiment.setStatus(PaymentStatus.ENCAISSE);
 
         orderRepository.save(ordre);
         paymentRepository.save(paiment);
-
         return paymentMapper.toReadDTO(paiment);
-
     }
 
 

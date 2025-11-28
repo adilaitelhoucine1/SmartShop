@@ -1,7 +1,10 @@
 package org.smartshop.smartshop.service.Impl;
 
 import org.smartshop.smartshop.exception.InvalidPromoException;
+import org.smartshop.smartshop.exception.OrderUnPaidException;
+import org.smartshop.smartshop.service.ClientService;
 import org.smartshop.smartshop.utils.ConfigService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +37,7 @@ public class OrderServiceImpl implements OrderService {
         private final OrderItemRepository orderItemRepository;
         private final ConfigRepository configRepository;
         private final ConfigService config;
-
+        private final ClientService clientService;
 
 
     @Transactional(readOnly = true)
@@ -159,5 +162,41 @@ public class OrderServiceImpl implements OrderService {
                     order.getStatus()==OrderStatus.CONFIRMED
                 ).toList();
     }
+
+    public OrderReadDTO validateOrder(Long orderId){
+        Order order= orderRepository.findById(orderId).orElseThrow(
+                ()->new ResourceNotFoundException("Order Not Found")
+        );
+        Client client= clientRepository.findById(order.getClient().getId()).orElseThrow(
+                ()->new ResourceNotFoundException("CLient Not Found")
+        );
+
+      List<OrderReadDTO> clientOrders=  getAllOrders().stream().
+                filter(ordree->ordree.getClient().getId().equals(client.getId()))
+                .filter(ordree->ordree.getStatus()==OrderStatus.PENDING)
+                .toList();
+
+      if (!clientOrders.isEmpty() || order.getRemainingAmount().compareTo(BigDecimal.ZERO)!=0){
+          throw new OrderUnPaidException("Order not Paid Yet");
+      }
+
+
+      for (OrderItem  orderItem : order.getOrderItems()){
+          Product product = productRepository.findById(orderItem.getProduct().getId()).orElseThrow(()->
+                  new ResourceNotFoundException("product doesn t existe")
+          );
+
+          product.setAvailableStock(product.getAvailableStock()-orderItem.getQuantity());
+          productRepository.save(product);
+      }
+      client.setTotalOrders(client.getTotalOrders()+1);
+      client.setTotalSpent(client.getTotalSpent().add(order.getSubTotalHT()));
+      clientService.updateClientTier(client);
+      clientRepository.save(client);
+
+      return orderMapper.toReadDTO(order);
+
+    }
+
 
 }

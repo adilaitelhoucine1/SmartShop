@@ -45,5 +45,11 @@ public class OrderController {
         return ResponseEntity.ok(orderHistory);
     }
 
+    @GetMapping("{orderId}/validate")
+    public ResponseEntity<OrderReadDTO> validateOrder(@PathVariable("orderId") Long orderId){
+        OrderReadDTO order=orderService.validateOrder(orderId);
+        return ResponseEntity.ok(order);
+    }
+
 
 }
