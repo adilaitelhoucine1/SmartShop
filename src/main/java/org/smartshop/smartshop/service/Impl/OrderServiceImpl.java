@@ -52,7 +52,7 @@ public class OrderServiceImpl implements OrderService {
                    .orElseThrow(() -> new ResourceNotFoundException("Promo code doesn't exist"));
 
            if (!promoCode.getIsActive()) {
-               throw new InvalidPromoException("Promo Code is Already Used");
+               throw new BusinessLogicException("Promo Code is Already Used");
            }
        }
 
@@ -223,6 +223,10 @@ public class OrderServiceImpl implements OrderService {
                 ()->new ResourceNotFoundException("CLient Not Found")
         );
 
+        if (order.getStatus()==OrderStatus.CONFIRMED){
+            throw new BusinessLogicException("the order already Confirmed");
+        }
+
         PromoCode promoCode = order.getPromoCode();
 
 //      List<OrderReadDTO> clientOrders=  getAllOrders().stream().
@@ -231,7 +235,7 @@ public class OrderServiceImpl implements OrderService {
 //                .toList();
 
         if (order.getRemainingAmount().compareTo(BigDecimal.ZERO) != 0){
-            throw new OrderUnPaidException("Order not paid yet");
+            throw new BusinessLogicException("Order not paid yet");
         }
 
 
