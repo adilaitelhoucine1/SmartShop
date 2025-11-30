@@ -1,7 +1,6 @@
 package org.smartshop.smartshop.service.Impl;
 
-import org.smartshop.smartshop.exception.InvalidPromoException;
-import org.smartshop.smartshop.exception.OrderUnPaidException;
+import org.smartshop.smartshop.exception.*;
 import org.smartshop.smartshop.service.ClientService;
 import org.smartshop.smartshop.utils.ConfigService;
 
@@ -12,8 +11,6 @@ import org.smartshop.smartshop.DTO.order.OrderCreateDTO;
 import org.smartshop.smartshop.DTO.order.OrderReadDTO;
 import org.smartshop.smartshop.entity.*;
 import org.smartshop.smartshop.enums.OrderStatus;
-import org.smartshop.smartshop.exception.ResourceNotFoundException;
-import org.smartshop.smartshop.exception.StockNotValid;
 import org.smartshop.smartshop.mapper.OrderItemMapper;
 import org.smartshop.smartshop.mapper.OrderMapper;
 import org.smartshop.smartshop.repository.*;
@@ -21,7 +18,8 @@ import org.smartshop.smartshop.service.OrderService;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
- import java.util.ArrayList;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -48,12 +46,14 @@ public class OrderServiceImpl implements OrderService {
        Client client=clientRepository.findById(orderCreateDTO.getClientId()).orElseThrow(
                ()->new ResourceNotFoundException("Client doesn t existe")
        );
-       PromoCode promoCode=promoCodeRepository.findById(orderCreateDTO.getPromoCodeId()).orElseThrow(
-               ()->new ResourceNotFoundException("Promo doesn t existe")
-       );
+       PromoCode promoCode = null;
+       if (orderCreateDTO.getPromoCodeId() != null) {
+           promoCode = promoCodeRepository.findById(orderCreateDTO.getPromoCodeId())
+                   .orElseThrow(() -> new ResourceNotFoundException("Promo code doesn't exist"));
 
-       if(!promoCode.getIsActive()){
-           throw new InvalidPromoException("Promo Code is Already Used");
+           if (!promoCode.getIsActive()) {
+               throw new InvalidPromoException("Promo Code is Already Used");
+           }
        }
 
        List<OrderItem> listOrderItem= new ArrayList<>();
@@ -63,7 +63,7 @@ public class OrderServiceImpl implements OrderService {
                     .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 
             if (item.getQuantity() > product.getAvailableStock()) {
-                throw new StockNotValid("Insufficient stock for product: " + product.getName());
+                throw new BusinessLogicException("Insufficient stock for product: " + product.getName());
             }
         }
 
@@ -81,8 +81,9 @@ public class OrderServiceImpl implements OrderService {
            default -> BigDecimal.ZERO;
        };
 
-       BigDecimal PromoDiscount=promoCode.getDiscountPercentage();
-
+       BigDecimal PromoDiscount = (promoCode != null)
+               ? promoCode.getDiscountPercentage()
+               : BigDecimal.ZERO;
        BigDecimal totalDiscountPercentage=tierDiscount.add(PromoDiscount);
 
 
@@ -101,6 +102,7 @@ public class OrderServiceImpl implements OrderService {
                 .totalDiscount(discountAmount)
                 .grandTotalTTC(grandTotalTTC)
                 .promoCode(promoCode)
+                .remainingAmount(grandTotalTTC)
                // .orderItems(listOrderItem)
                 .build();
 
@@ -135,25 +137,75 @@ public class OrderServiceImpl implements OrderService {
 
    }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public  OrderReadDTO cancelOrder(Long id){
         Order order=orderRepository.findById(id).orElseThrow(()->
-                new ResourceNotFoundException("Product doesn t existe")
+                new ResourceNotFoundException("Order not found")
                 );
+
+        if (order.getStatus() == OrderStatus.CANCELED) {
+            throw new IllegalStateException("Order is already canceled");
+        }
+        if (order.getStatus() == OrderStatus.REJECTED) {
+            throw new IllegalStateException("Cannot cancel a rejected order");
+        }
+
+        if (order.getStatus() == OrderStatus.CONFIRMED) {
+
+            for (OrderItem orderItem : order.getOrderItems()) {
+                Product product = productRepository.findById(orderItem.getProduct().getId()).orElseThrow(() ->
+                        new ResourceNotFoundException("Product not Found ")
+                );
+                product.setAvailableStock(product.getAvailableStock() + orderItem.getQuantity());
+                productRepository.save(product);
+            }
+
+        }
+        if (order.getPromoCode() != null){
+            PromoCode promoCode = order.getPromoCode();
+            promoCode.setIsActive(true);
+            promoCodeRepository.save(promoCode);
+        }
+
         order.setStatus(OrderStatus.CANCELED);
         orderRepository.save(order);
         return orderMapper.toReadDTO(order);
     }
-    @Transactional(readOnly = true)
+    @Transactional
     public  OrderReadDTO rejectOrder(Long id){
         Order order=orderRepository.findById(id).orElseThrow(()->
-                new ResourceNotFoundException("Product doesn t existe")
+                new ResourceNotFoundException("Order doesn t existe")
                 );
+
+        if (order.getStatus() == OrderStatus.REJECTED) {
+            throw new IllegalStateException("Order is already rejected");
+        }
+        if (order.getStatus() == OrderStatus.CANCELED) {
+            throw new IllegalStateException("Cannot reject a canceled order");
+        }
+
+        if (order.getStatus() == OrderStatus.CONFIRMED) {
+
+            for (OrderItem orderItem : order.getOrderItems()) {
+                Product product = productRepository.findById(orderItem.getProduct().getId()).orElseThrow(() ->
+                        new ResourceNotFoundException("Product doesn t existe")
+                );
+                product.setAvailableStock(product.getAvailableStock() + orderItem.getQuantity());
+                productRepository.save(product);
+            }
+        }
+
+        if (order.getPromoCode() != null){
+            PromoCode promoCode = order.getPromoCode();
+            promoCode.setIsActive(true);
+            promoCodeRepository.save(promoCode);
+        }
+
         order.setStatus(OrderStatus.REJECTED);
         orderRepository.save(order);
         return orderMapper.toReadDTO(order);
     }
-    @Transactional(readOnly = true)
+    @Transactional
     public  List<OrderReadDTO> getOrderHistoryByClient(Long clientId){
         Client client= clientRepository.findById(clientId).orElseThrow(
                 ()->new ResourceNotFoundException("Client with Id Doesn t existe")
@@ -171,14 +223,16 @@ public class OrderServiceImpl implements OrderService {
                 ()->new ResourceNotFoundException("CLient Not Found")
         );
 
-      List<OrderReadDTO> clientOrders=  getAllOrders().stream().
-                filter(ordree->ordree.getClient().getId().equals(client.getId()))
-                .filter(ordree->ordree.getStatus()==OrderStatus.PENDING)
-                .toList();
+        PromoCode promoCode = order.getPromoCode();
 
-      if (!clientOrders.isEmpty() || order.getRemainingAmount().compareTo(BigDecimal.ZERO)!=0){
-          throw new OrderUnPaidException("Order not Paid Yet");
-      }
+//      List<OrderReadDTO> clientOrders=  getAllOrders().stream().
+//                filter(ordree->ordree.getClient().getId().equals(client.getId()))
+//                .filter(ordree->ordree.getStatus()==OrderStatus.PENDING)
+//                .toList();
+
+        if (order.getRemainingAmount().compareTo(BigDecimal.ZERO) != 0){
+            throw new OrderUnPaidException("Order not paid yet");
+        }
 
 
       for (OrderItem  orderItem : order.getOrderItems()){
@@ -191,8 +245,22 @@ public class OrderServiceImpl implements OrderService {
       }
       client.setTotalOrders(client.getTotalOrders()+1);
       client.setTotalSpent(client.getTotalSpent().add(order.getSubTotalHT()));
+      if (client.getFirstOrderDate()==null){
+          client.setFirstOrderDate(LocalDate.now());
+      }
+      client.setLastOrderDate(LocalDate.now());
       clientService.updateClientTier(client);
       clientRepository.save(client);
+
+
+
+        if (promoCode != null){
+            promoCode.setIsActive(false);
+            promoCodeRepository.save(promoCode);
+        }
+        order.setStatus(OrderStatus.CONFIRMED);
+        orderRepository.save(order);
+
 
       return orderMapper.toReadDTO(order);
 

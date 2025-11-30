@@ -102,37 +102,22 @@ public class ClientServiceImpl implements ClientService {
         return clientMapper.toProfileDTO(client);
     }
 
-    public void updateClientTier(Client client){
-        Client cliennt=clientRepository.findById(client.getId()).orElseThrow(
-                ()->new ResourceNotFoundException("Client Not Found")
-        );
+    public void updateClientTier(Client client) {
+        Client cliennt = clientRepository.findById(client.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Client Not Found"));
 
-        switch (cliennt.getLoyaltyTier().name()) {
+        BigDecimal totalSpent = cliennt.getTotalSpent();
+        Integer totalOrders = cliennt.getTotalOrders();
 
-            case "BASIC" -> {
-                if (cliennt.getTotalOrders() >= 3
-                        || cliennt.getTotalSpent().compareTo(new BigDecimal("1000")) >= 0) {
-
-                    cliennt.setLoyaltyTier(CustomerTier.SILVER);
-                }
-            }
-            case "SILVER" -> {
-                if (cliennt.getTotalOrders() >= 10
-                        || cliennt.getTotalSpent().compareTo(new BigDecimal("5000")) >= 0) {
-
-                    cliennt.setLoyaltyTier(CustomerTier.GOLD);
-                }
-            }
-            case "GOLD" -> {
-                if (cliennt.getTotalOrders() >= 20
-                        || cliennt.getTotalSpent().compareTo(new BigDecimal("15000")) >= 0) {
-
-                    cliennt.setLoyaltyTier(CustomerTier.PLATINUM);
-                }
-            }
-
+        if (totalOrders >= 20 || totalSpent.compareTo(new BigDecimal("15000")) >= 0) {
+            cliennt.setLoyaltyTier(CustomerTier.PLATINUM);
+        } else if (totalOrders >= 10 || totalSpent.compareTo(new BigDecimal("5000")) >= 0) {
+            cliennt.setLoyaltyTier(CustomerTier.GOLD);
+        } else if (totalOrders >= 3 || totalSpent.compareTo(new BigDecimal("1000")) >= 0) {
+            cliennt.setLoyaltyTier(CustomerTier.SILVER);
         }
-        clientRepository.save(client);
 
+
+        clientRepository.save(cliennt);
     }
 }

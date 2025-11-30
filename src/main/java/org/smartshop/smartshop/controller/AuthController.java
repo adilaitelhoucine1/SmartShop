@@ -24,10 +24,7 @@ public class AuthController {
          this.userService = userService;
      }
 
-        @GetMapping("/test")
-        public String login() {
-            return "login";
-        }
+
 
 
     @PostMapping("/login")

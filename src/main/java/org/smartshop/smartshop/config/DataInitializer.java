@@ -25,8 +25,8 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void createDefaultAdmin() {
-        ConfigService configService= new ConfigService(configRepository);
-        System.out.println("TVA: " + configService.getTva());
+//        ConfigService configService= new ConfigService(configRepository);
+//        System.out.println("TVA: " + configService.getTva());
 
         if (!userRepository.existsByRole(UserRole.ADMIN)) {
             User admin = User.builder()

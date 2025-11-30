@@ -1,7 +1,7 @@
 package org.smartshop.smartshop.controller;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.smartshop.smartshop.DTO.payment.PaymentCreateDTO;
 import org.smartshop.smartshop.DTO.payment.PaymentReadDTO;
 import org.smartshop.smartshop.service.PaymentService;
