@@ -2,7 +2,6 @@ package org.smartshop.smartshop.service.Impl;
 
 import org.smartshop.smartshop.exception.*;
 import org.smartshop.smartshop.service.ClientService;
-import org.smartshop.smartshop.utils.ConfigService;
 
 import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.Valid;
@@ -89,6 +88,7 @@ public class OrderServiceImpl implements OrderService {
 
       BigDecimal discountAmount = subTotalHT.multiply(totalDiscountPercentage)
                    .divide(BigDecimal.valueOf(100), 2);
+
        BigDecimal amountHTAfterDiscount = subTotalHT.subtract(discountAmount);
 
        BigDecimal tva = amountHTAfterDiscount.multiply(config.getTva());

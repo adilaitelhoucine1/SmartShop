@@ -1,6 +1,8 @@
 package org.smartshop.smartshop.controller;
 
 
+import jakarta.servlet.http.HttpSession;
+import org.smartshop.smartshop.utils.SecurityAuth;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.smartshop.smartshop.DTO.product.ProductUpdateDTO;
@@ -25,33 +27,40 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<Page<ProductReadDTO>> getAllProducts(
             @RequestParam(defaultValue = "false") boolean includeDeleted,
-            Pageable pageable){
+            Pageable pageable , HttpSession session){
+        SecurityAuth.requireClient(session);
         Page<ProductReadDTO> products = productService.getAllProducts(includeDeleted, pageable);
         return ResponseEntity.ok(products);
     }
 
     @GetMapping("/{id}")
-     public  ResponseEntity<ProductReadDTO> getProductById(@PathVariable("id") Long id){
+     public  ResponseEntity<ProductReadDTO> getProductById(@PathVariable("id") Long id , HttpSession  session){
+        SecurityAuth.requireAdmin(session);
         ProductReadDTO product=productService.getProductById(id);
         return ResponseEntity.ok(product);
     }
 
 
     @PostMapping
-    public ResponseEntity<ProductReadDTO> createProduct(@Valid @RequestBody ProductCreateDTO productCreateDTO){
+    public ResponseEntity<ProductReadDTO> createProduct(@Valid @RequestBody ProductCreateDTO productCreateDTO,
+                                                        HttpSession session){
+        SecurityAuth.requireAdmin(session);
         ProductReadDTO product =productService.createProduct(productCreateDTO);
         return ResponseEntity.ok(product);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ProductReadDTO> updateProduct(@Valid @RequestBody ProductUpdateDTO productUpdateDTO,
-                                                        @PathVariable("id") Long id){
+                                                        @PathVariable("id") Long id, HttpSession session){
+        SecurityAuth.requireAdmin(session);
         ProductReadDTO  productUpdated=productService.updateProduct(id,productUpdateDTO);
         return ResponseEntity.ok(productUpdated);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String, String>> deleteProduct(@PathVariable("id") Long id){
+    public ResponseEntity<Map<String, String>> deleteProduct(@PathVariable("id") Long id,
+                                                             HttpSession session){
+        SecurityAuth.requireAdmin(session);
         productService.deleteProduct(id);
         return ResponseEntity.ok(Map.of("message","Item deleted succesffuly"));
     }

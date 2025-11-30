@@ -1,17 +1,13 @@
 package org.smartshop.smartshop.config;
 
 import lombok.RequiredArgsConstructor;
-import org.smartshop.smartshop.entity.Config;
 import org.smartshop.smartshop.entity.User;
 import org.smartshop.smartshop.enums.UserRole;
 import org.smartshop.smartshop.repository.ConfigRepository;
 import org.smartshop.smartshop.repository.UserRepository;
-import org.smartshop.smartshop.utils.ConfigService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
-
-import java.math.BigDecimal;
 
 @Component
 @RequiredArgsConstructor

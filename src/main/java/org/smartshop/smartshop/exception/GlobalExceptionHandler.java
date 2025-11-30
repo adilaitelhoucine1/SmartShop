@@ -40,14 +40,23 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDTO> handleSessionEmtyException(SessionEmtyException ex
     , WebRequest request){
 
+        ErrorResponseDTO errorResponseDTO= new ErrorResponseDTO(401,"Error",ex.getMessage(),request.getDescription(false));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponseDTO);
+    }
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ErrorResponseDTO> handleSessionForbiddenException(ForbiddenException ex
+    , WebRequest request){
+
+        ErrorResponseDTO errorResponseDTO= new ErrorResponseDTO(403,"Error",ex.getMessage(),request.getDescription(false));
+        return ResponseEntity.ok(errorResponseDTO);
+    }
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorResponseDTO> handleIllegalStateException(IllegalStateException ex
+    , WebRequest request){
+
         ErrorResponseDTO errorResponseDTO= new ErrorResponseDTO(401,"No User Connect",ex.getMessage(),request.getDescription(false));
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponseDTO);
     }
-
-
-
-
-
 
     @ExceptionHandler(BusinessLogicException.class)
     public ResponseEntity<ErrorResponseDTO> handleBusinessLogicException(BusinessLogicException ex
