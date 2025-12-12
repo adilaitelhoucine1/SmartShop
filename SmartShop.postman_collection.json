@@ -1,0 +1,448 @@
+{
+	"info": {
+		"name": "SmartShop API",
+		"description": "Complete API collection for SmartShop e-commerce management system",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "👥 Clients",
+			"item": [
+				{
+					"name": "Get All Clients",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/clients",
+							"host": ["{{baseUrl}}"],
+							"path": ["clients"]
+						}
+					}
+				},
+				{
+					"name": "Get Client by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/clients/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["clients", "1"]
+						}
+					}
+				},
+				{
+					"name": "Create Client",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nom\": \"Dupont\",\n  \"prenom\": \"Jean\",\n  \"email\": \"jean.dupont@email.com\",\n  \"telephone\": \"0612345678\",\n  \"adresse\": \"123 Rue de la Paix, Paris\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/clients",
+							"host": ["{{baseUrl}}"],
+							"path": ["clients"]
+						}
+					}
+				},
+				{
+					"name": "Update Client",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nom\": \"Dupont\",\n  \"prenom\": \"Jean-Pierre\",\n  \"email\": \"jp.dupont@email.com\",\n  \"telephone\": \"0612345679\",\n  \"adresse\": \"456 Avenue des Champs, Paris\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/clients/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["clients", "1"]
+						}
+					}
+				},
+				{
+					"name": "Delete Client",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/clients/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["clients", "1"]
+						}
+					}
+				},
+				{
+					"name": "Get Client Profile",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/clients/profile",
+							"host": ["{{baseUrl}}"],
+							"path": ["clients", "profile"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "📦 Products",
+			"item": [
+				{
+					"name": "Get All Products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products?includeDeleted=false&page=0&size=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["products"],
+							"query": [
+								{
+									"key": "includeDeleted",
+									"value": "false"
+								},
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Product by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["products", "1"]
+						}
+					}
+				},
+				{
+					"name": "Create Product",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nom\": \"iPhone 15\",\n  \"description\": \"Smartphone Apple dernière génération\",\n  \"prix\": 999.99,\n  \"stock\": 50,\n  \"categorie\": \"ELECTRONIQUE\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/products",
+							"host": ["{{baseUrl}}"],
+							"path": ["products"]
+						}
+					}
+				},
+				{
+					"name": "Update Product",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nom\": \"iPhone 15 Pro\",\n  \"description\": \"Smartphone Apple Pro dernière génération\",\n  \"prix\": 1199.99,\n  \"stock\": 30,\n  \"categorie\": \"ELECTRONIQUE\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/products/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["products", "1"]
+						}
+					}
+				},
+				{
+					"name": "Delete Product",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["products", "1"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "🛍️ Orders",
+			"item": [
+				{
+					"name": "Get All Orders",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/order",
+							"host": ["{{baseUrl}}"],
+							"path": ["order"]
+						}
+					}
+				},
+				{
+					"name": "Create Order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"clientId\": 1,\n  \"promoCodeId\": null,\n  \"orderItems\": [\n    {\n      \"productId\": 1,\n      \"quantity\": 2\n    },\n    {\n      \"productId\": 2,\n      \"quantity\": 1\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/order",
+							"host": ["{{baseUrl}}"],
+							"path": ["order"]
+						}
+					}
+				},
+				{
+					"name": "Cancel Order",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/order/1/cancel",
+							"host": ["{{baseUrl}}"],
+							"path": ["order", "1", "cancel"]
+						}
+					}
+				},
+				{
+					"name": "Reject Order",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/order/1/reject",
+							"host": ["{{baseUrl}}"],
+							"path": ["order", "1", "reject"]
+						}
+					}
+				},
+				{
+					"name": "Validate Order",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/order/1/validate",
+							"host": ["{{baseUrl}}"],
+							"path": ["order", "1", "validate"]
+						}
+					}
+				},
+				{
+					"name": "Get Order History by Client",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/order/1/orderHistory",
+							"host": ["{{baseUrl}}"],
+							"path": ["order", "1", "orderHistory"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "💳 Payments",
+			"item": [
+				{
+					"name": "Create Payment - ESPECES",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"orderId\": 1,\n  \"amount\": 500.00,\n  \"paymentMethod\": \"ESPECES\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/payment",
+							"host": ["{{baseUrl}}"],
+							"path": ["payment"]
+						}
+					}
+				},
+				{
+					"name": "Create Payment - CHEQUE",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"orderId\": 1,\n  \"amount\": 1000.00,\n  \"paymentMethod\": \"CHEQUE\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/payment",
+							"host": ["{{baseUrl}}"],
+							"path": ["payment"]
+						}
+					}
+				},
+				{
+					"name": "Create Payment - VIREMENT",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"orderId\": 1,\n  \"amount\": 2000.00,\n  \"paymentMethod\": \"VIREMENT\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/payment",
+							"host": ["{{baseUrl}}"],
+							"path": ["payment"]
+						}
+					}
+				},
+				{
+					"name": "Validate Payment",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/payment/1/validate",
+							"host": ["{{baseUrl}}"],
+							"path": ["payment", "1", "validate"]
+						}
+					}
+				},
+				{
+					"name": "Reject Payment",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/payment/1/reject",
+							"host": ["{{baseUrl}}"],
+							"path": ["payment", "1", "reject"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "🎫 Promo Codes",
+			"item": [
+				{
+					"name": "Get All Promo Codes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/promocode",
+							"host": ["{{baseUrl}}"],
+							"path": ["promocode"]
+						}
+					}
+				},
+				{
+					"name": "Get Promo Code by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/promocode/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["promocode", "1"]
+						}
+					}
+				},
+				{
+					"name": "Create Promo Code",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"code\": \"SUMMER2024\",\n  \"discountPercentage\": 20.0,\n  \"validFrom\": \"2024-06-01\",\n  \"validUntil\": \"2024-08-31\",\n  \"maxUsage\": 100,\n  \"active\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/promocode",
+							"host": ["{{baseUrl}}"],
+							"path": ["promocode"]
+						}
+					}
+				},
+				{
+					"name": "Deactivate Promo Code",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/promocode/1/desactiver",
+							"host": ["{{baseUrl}}"],
+							"path": ["promocode", "1", "desactiver"]
+						}
+					}
+				}
+			]
+		}
+	]
+}
